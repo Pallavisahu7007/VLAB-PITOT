@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="./css/simulation.css">
+    <style>
+        body {
+            background-image: url('./images/fluid.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+         #instruction-box {
+            margin: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            max-width: 800px;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="speakInstructions()" style="margin: 20px; padding: 10px; font-size: 16px;">
+            Instructions
+        </button>
+        <div id="instruction-box">Click "Instructions" to start the guide.</div>
+        <h1 id="header" style="background-color: aqua;">To determine the local point pressure with the help of pitot tube </h1>
+        <div class="option"> 
+            <span id="vProfile" style="font-size:22px; font-weight: 1000;">Velocity Profile</span>
+            <span id="Cd" style="font-size:22px;font-weight: 1000;">Coefficient of Velocity</span>
+        </div>
+        <h2 id="cd-head" style="display: none;">Coefficient of Velocity</h2>
+        <h2 id="vel-profile-head" style="display: none;">Velocity Profile</h2>
+        <div class="container">
+            <div class="buttonPlayers">
+                <div class="switch-button"><button id="switch" style="display: none;">Power On</button></div>
+                <div class="main-container">
+                    <div class="images">
+                        <img src="./images/pitot_tube_off.png" style="width:500px" id="off">
+                        <img src="./images/pitot_tube_on.png" style="width:500px; display: none;" id="on">
+                    </div>
+                    <div class="player">
+                        <lottie-player id="powerOn" mode="normal" src="./json/pitot_power_up.json"
+                            style="width: 500px;display:none">
+                        </lottie-player>
+                        <lottie-player id="left" mode="normal" src="./json/pitot_static.json"
+                            style="width: 500px;display:none">
+                        </lottie-player>
+                        <lottie-player id="right" mode="normal" src="./json/pitot_dynamic.json"
+                            style="width: 500px;display:none">
+                        </lottie-player>
+                    </div>
+                    <div id="slider-container" style="display: none;">
+                        <span style="font-size: 18px;">Change Flowrate :</span>
+                        <input id="slider" type="range" min="0" max="100" value="0">
+                    </div>
+                </div>
+            </div>
+            <div class="aside-container">
+                <lottie-player id="pinHeightSlider" mode="normal" src="./json/PitotPinAnim.json" style="width: 300px;">
+                </lottie-player>
+                <div class="arrows" style="display: none;">
+                    <div><img id="upArrow" src="./images/upload.png"></div>
+                    <div><img id="downArrow" src="./images/download.png"></div>
+                </div>
+            </div>
+        </div>
+        <div class="reading-table-container" style="margin-top:50px;">
+            <table id="vel-profile-reading" style="display: none;">
+                <tr>
+                    <th id="writeFlowRate" colspan="3">Q = </th>
+                </tr>
+                <tr>
+                    <th>R</th>
+                    <th>h1 (cm)</th>
+                    <th>h2 (cm)</th>
+                </tr>
+                <tr id="row-insert">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <table id="cd-reading" style="display:none;">
+                <tr>
+                    <th>Q x \(10^{-1}\) (L/s)</th>
+                    <th>h1 (cm)</th>
+                    <th>h2 (cm)</th>
+                </tr>
+                <tr id="cd-row-insert">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <div class="save" style="display: none;"><button id="save-btn">save</button></div>
+            <div class="obs-table-container" style="display: none;"><button id="show-obs-table" style="background-color: aqua;">Show Observation Table</button></div>
+        </div>
+        <div id="obsTableContainer" style="display: none;">
+            <h1>Observation Table :</h1>
+            <div class="observation">
+                <table id="vel-obsTable" style="display: none;">
+                    <tr>
+                        <th id="writeFlowRateInObs" colspan="3"></th>
+                    </tr>
+                    <tr>
+                        <th>R</th>
+                        <th>h1 (cm)</th>
+                        <th>h2 (cm)</th>
+                    </tr>
+                </table>
+                <table id="cd-obsTable" style="display: none;">
+                    <tr>
+                        <th>Q x \(10^{-1}\) (L/s)</th>
+                        <th>h1 (cm)</th>
+                        <th>h2 (cm)</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="export" style="display: none;"><button id="toExcel">Export to Excel</button></div>
+        <div class="next"></div>
+    </div>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@0.4.0/dist/tgs-player.js"></script>
+    <script src="./js/calculation.js"></script>
+    <script src="./js/table2excel.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        function speakInstructions() {
+            const steps = [
+                "Welcome to the Pitot Tube Apparatus Simulation.",
+                "First, observe the two options: Velocity Profile and Coefficient of Velocity.",
+                "Click on the Power On button to start the apparatus.",
+                "Watch the image change from Off to On.",
+                "Use the slider below to change the flow rate of water.",
+                "Observe changes in the animation and readings.",
+                "Use the Up and Down arrows to adjust the pin height.",
+                "Once you are done, you can save the values and export to Excel.",
+                "Replay this guide anytime using the button above."
+            ];
+            let index = 0;
+            const box = document.getElementById("instruction-box");
+            box.innerText = "";
+            function speakStep() {
+                if (index >= steps.length) return;
+                const text = steps[index];
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1;
+                utterance.pitch = 1;
+                utterance.lang = 'en-US';
+                // Update instruction on screen
+                box.innerText = text;
+                speechSynthesis.speak(utterance);
+                index++;
+                utterance.onend = () => {
+                    setTimeout(speakStep, 800); // Move to next step after a pause
+                };
+            }
+            speechSynthesis.cancel(); // Stop previous speech
+            speakStep(); // Start steps
+        }
+    </script>
+</body>
+</html>
